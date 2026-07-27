@@ -121,6 +121,7 @@
 
     input,
     select,
+    textarea,
     button {
       width: 100%;
       min-height: 48px;
@@ -129,7 +130,8 @@
     }
 
     input,
-    select {
+    select,
+    textarea {
       padding: 0 14px;
       color: var(--ink);
       background: #fbfcfe;
@@ -141,6 +143,18 @@
     input::placeholder {
       color: #aeb8c4;
       opacity: .55;
+    }
+
+    textarea {
+      min-height: 220px;
+      padding: 14px;
+      resize: vertical;
+      line-height: 1.55;
+    }
+
+    textarea::placeholder {
+      color: #aeb8c4;
+      opacity: .7;
     }
 
     button {
@@ -226,6 +240,15 @@
         <input id="deploymentUrl" type="url" placeholder="https://example.com/kopo01" inputmode="url">
       </div>
 
+      <label>
+        사용한 프롬프트 팁
+        <textarea
+          id="projectDescription"
+          rows="10"
+          placeholder="사용한 프롬프트와 활용 팁을 작성해주세요"
+        ></textarea>
+      </label>
+
       <button type="submit">저장</button>
       <p id="message"></p>
     </form>
@@ -238,6 +261,7 @@
     const projectNameInput = document.getElementById("projectName");
     const progressInput = document.getElementById("progress");
     const deploymentUrlInput = document.getElementById("deploymentUrl");
+    const projectDescriptionInput = document.getElementById("projectDescription");
     const message = document.getElementById("message");
 
     function setTopNavLinks() {
@@ -274,7 +298,8 @@
         projectName: projectNameInput.value,
         progress: progressInput.value,
         deploymentUrl: deploymentUrlInput.value,
-        professorFeedback: ""
+        professorFeedback: "",
+        projectDescription: projectDescriptionInput.value
       };
 
       try {
@@ -289,6 +314,7 @@
         projectNameInput.value = "";
         progressInput.value = "";
         deploymentUrlInput.value = "";
+        projectDescriptionInput.value = "";
       } catch (error) {
         message.textContent = `오류: ${error.message}`;
       }

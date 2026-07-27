@@ -9,7 +9,8 @@ test("accepts project input for one student project", () => {
       projectName: " 프로젝트 A ",
       progress: "프로토타입",
       deploymentUrl: " https://example.com/kopo01 ",
-      professorFeedback: "README 보강"
+      professorFeedback: "README 보강",
+      projectDescription: " 기획부터 배포까지\n직접 구현했습니다. "
     }),
     {
       ok: true,
@@ -18,10 +19,26 @@ test("accepts project input for one student project", () => {
         projectName: "프로젝트 A",
         progress: "프로토타입",
         deploymentUrl: "https://example.com/kopo01",
-        professorFeedback: "README 보강"
+        professorFeedback: "README 보강",
+        projectDescription: "기획부터 배포까지\n직접 구현했습니다."
       }
     }
   );
+});
+
+test("preserves a long multilingual project description with line breaks", () => {
+  const description = `사용 기술: Node.js, MySQL\n구현 과정: ${"상세 설명 ".repeat(2000)}`;
+  const result = validateProjectInput({
+    studentId: "kopo01",
+    projectName: "포트폴리오",
+    progress: "완료",
+    deploymentUrl: "https://example.com",
+    professorFeedback: "",
+    projectDescription: description
+  });
+
+  assert.equal(result.ok, true);
+  assert.equal(result.project.projectDescription, description.trim());
 });
 
 test("rejects invalid deployment url", () => {

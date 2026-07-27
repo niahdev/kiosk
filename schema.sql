@@ -12,6 +12,7 @@ CREATE TABLE IF NOT EXISTS student_project (
     deployment_url VARCHAR(500) NULL,
     screenshot_path VARCHAR(500) NULL,
     professor_feedback TEXT NULL,
+    project_description LONGTEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     UNIQUE KEY unique_student_project (student_id, project_name)

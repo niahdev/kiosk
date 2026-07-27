@@ -124,6 +124,7 @@
 
     input,
     select,
+    textarea,
     button {
       width: 100%;
       min-height: 48px;
@@ -132,13 +133,21 @@
     }
 
     input,
-    select {
+    select,
+    textarea {
       padding: 0 14px;
       color: var(--ink);
       background: #fbfcfe;
       border: 1px solid #becad7;
       font-size: 18px;
       font-weight: 800;
+    }
+
+    textarea {
+      min-height: 220px;
+      padding: 14px;
+      resize: vertical;
+      line-height: 1.55;
     }
 
     button {
@@ -249,6 +258,15 @@
             <input id="deploymentUrl" type="url" placeholder="https://example.com/kopo01" inputmode="url">
           </label>
 
+          <label>
+            사용한 프롬프트 팁
+            <textarea
+              id="projectDescription"
+              rows="10"
+              placeholder="사용한 프롬프트와 활용 팁을 작성해주세요"
+            ></textarea>
+          </label>
+
           <button type="submit">수정 저장</button>
         </form>
 
@@ -266,6 +284,7 @@
     const projectNameInput = document.getElementById("projectName");
     const progressInput = document.getElementById("progress");
     const deploymentUrlInput = document.getElementById("deploymentUrl");
+    const projectDescriptionInput = document.getElementById("projectDescription");
     const message = document.getElementById("message");
     let foundProjects = [];
     let selectedProject = null;
@@ -316,6 +335,7 @@
       projectNameInput.value = project.projectName;
       progressInput.value = project.progress;
       deploymentUrlInput.value = project.deploymentUrl || "";
+      projectDescriptionInput.value = project.projectDescription || "";
       editForm.classList.remove("hidden");
       message.textContent = `${project.projectName} 선택됨`;
     }
@@ -381,7 +401,8 @@
         projectName: projectNameInput.value,
         progress: progressInput.value,
         deploymentUrl: deploymentUrlInput.value,
-        professorFeedback: selectedProject.professorFeedback || ""
+        professorFeedback: selectedProject.professorFeedback || "",
+        projectDescription: projectDescriptionInput.value
       };
 
       try {

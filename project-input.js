@@ -12,6 +12,9 @@ function validateProjectInput(input) {
   const progress = String(input.progress ?? "").trim();
   const deploymentUrl = String(input.deploymentUrl ?? "").trim();
   const professorFeedback = String(input.professorFeedback ?? "").trim();
+  const projectDescription = input.projectDescription == null
+    ? null
+    : String(input.projectDescription).trim();
 
   if (!studentId) {
     return { ok: false, error: "학생 ID를 입력하세요." };
@@ -43,7 +46,8 @@ function validateProjectInput(input) {
       projectName,
       progress,
       deploymentUrl,
-      professorFeedback
+      professorFeedback,
+      projectDescription
     }
   };
 }

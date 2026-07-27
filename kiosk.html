@@ -9,94 +9,102 @@
 </head>
 <body>
   <main>
-    <nav class="top-nav" aria-label="page navigation">
-      <a href="/kiosk" data-nav-route="kiosk" class="active">Kiosk</a>
-      <a href="/insert" data-nav-route="insert">Insert</a>
+    <nav class="language-switcher" aria-label="언어 선택" data-i18n-aria-label="languageSelection">
+      <button class="language-button active" type="button" data-language="ko" aria-pressed="true">한국어</button>
+      <button class="language-button" type="button" data-language="en" aria-pressed="false">English</button>
+      <button class="language-button" type="button" data-language="ar" aria-pressed="false" lang="ar" dir="rtl">العربية</button>
     </nav>
-
     <section class="header">
-      <h1>사용자별 프로젝트 현황</h1>
-      <p>사용자를 터치하면 프로젝트 목록이 열리고, 프로젝트를 고르면 상세 목업 화면이 열립니다</p>
+      <div class="refresh-control">
+        <button
+          class="refresh-button"
+          id="refreshPageButton"
+          type="button"
+          aria-label="새로고침"
+          title="새로고침"
+          data-i18n-aria-label="refreshPage"
+          data-i18n-title="refreshPage"
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M20 11a8 8 0 1 0-2.34 5.66M20 4v7h-7"></path>
+          </svg>
+        </button>
+      </div>
+      <h1 data-i18n="heading">사용자별 프로젝트 현황</h1>
+      <p data-i18n="intro">사용자를 터치하면 프로젝트 목록이 열리고, 프로젝트를 고르면 상세 화면이 열립니다</p>
       <div class="deadline-bar">
-        <span>지금 시간: <strong id="currentTime">-</strong></span>
-        <span>최종 마감: <strong id="deadlineText">2026-07-31</strong></span>
-        <span>남은 시간: <strong id="deadlineCountdown">-</strong></span>
+        <span><span data-i18n="currentTime">지금 시간</span>: <strong id="currentTime">-</strong></span>
       </div>
     </section>
 
-    <p id="message">불러오는 중...</p>
+    <p id="message" data-i18n="loading">불러오는 중...</p>
 
     <div class="user-list" id="projects"></div>
   </main>
 
   <div class="modal" id="userModal">
     <div class="modal-body modal-wide" role="dialog" aria-modal="true" aria-labelledby="userModalTitle">
-      <h2 id="userModalTitle">사용자 프로젝트</h2>
-      <div class="student-id" id="userModalStudentId">-</div>
+      <h2 id="userModalTitle" data-i18n="userProjects">사용자 프로젝트</h2>
+      <div class="student-id" id="userModalStudentId" dir="auto">-</div>
       <section class="detail-block">
-        <h3>프로젝트 목록</h3>
+        <h3 data-i18n="projectList">프로젝트 목록</h3>
         <div class="project-list" id="userProjectList"></div>
       </section>
       <div class="modal-actions">
-        <button id="closeUserModalButton" type="button">닫기</button>
+        <button id="closeUserModalButton" type="button" data-i18n="close">닫기</button>
       </div>
     </div>
   </div>
 
   <div class="modal" id="projectModal">
     <div class="modal-body modal-wide" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
-      <h2 id="modalTitle">프로젝트 목업</h2>
-      <div class="student-id" id="modalStudentId">-</div>
-      <div class="project-name" id="modalProjectName">-</div>
-      <div class="student-progress" id="modalProjectProgress">-</div>
+      <h2 id="modalTitle" data-i18n="projectPreview">프로젝트 미리보기</h2>
+      <div class="student-id" id="modalStudentId" dir="auto">-</div>
+      <div class="project-name" id="modalProjectName" dir="auto">-</div>
 
       <section class="detail-block">
-        <h3>스크린샷</h3>
+        <h3 data-i18n="screenshot">스크린샷</h3>
         <div id="projectScreenshotBlock" class="screenshot-card">
-          <p class="detail-copy">아직 등록된 스크린샷이 없습니다.</p>
+          <p class="detail-copy" data-i18n="noScreenshot">아직 등록된 스크린샷이 없습니다.</p>
         </div>
       </section>
 
-      <section class="detail-block">
-        <h3>추천 일정</h3>
-        <div class="schedule-list modal-schedule-list" id="projectScheduleList"></div>
-      </section>
-
       <section class="detail-block" id="deploymentBlock" hidden>
-        <h3>배포판</h3>
-        <p class="detail-copy" id="deploymentUrlText"></p>
-        <button class="preview-button" id="openDeploymentButton" type="button">배포판 목업 열기</button>
+        <h3 data-i18n="deployment">배포판</h3>
+        <p class="detail-copy" id="deploymentUrlText" dir="ltr"></p>
+        <button class="preview-button" id="openDeploymentButton" type="button" data-i18n="openDeploymentMockup">배포판 목업 열기</button>
+      </section>
+
+      <section class="detail-block" id="projectDescriptionBlock" hidden>
+        <h3 data-i18n="projectProcess">사용한 프롬프트 팁</h3>
+        <p class="detail-copy project-description-copy" id="projectDescriptionText" dir="auto"></p>
       </section>
 
       <section class="detail-block">
-        <h3>피드백 (교수님)</h3>
-        <p id="modalProfessorFeedback" class="detail-copy">아직 입력된 피드백이 없습니다.</p>
-      </section>
-
-      <section class="detail-block">
-        <h3>코멘트</h3>
+        <h3 data-i18n="comments">코멘트</h3>
         <div class="comment-list" id="modalCommentList"></div>
         <form id="commentForm" class="comment-form">
-          <input id="commentAuthorInput" type="text" placeholder="작성자 (예: kopo05)">
-          <textarea id="commentInput" rows="3" placeholder="누구나 코멘트를 남길 수 있습니다"></textarea>
-          <button type="submit">코멘트 등록</button>
+          <input id="commentAuthorInput" type="text" placeholder="작성자 (예: kopo05)" data-i18n-placeholder="authorPlaceholder" dir="auto">
+          <textarea id="commentInput" rows="3" placeholder="누구나 코멘트를 남길 수 있습니다" data-i18n-placeholder="commentPlaceholder" dir="auto"></textarea>
+          <button type="submit" data-i18n="registerComment">코멘트 등록</button>
         </form>
       </section>
 
       <div class="modal-actions">
-        <button id="closeModalButton" type="button">닫기</button>
+        <button id="closeModalButton" type="button" data-i18n="close">닫기</button>
       </div>
     </div>
   </div>
 
   <div class="deployment-preview" id="deploymentPreview" aria-hidden="true">
     <div class="deployment-preview-bar">
-      <button id="closeDeploymentButton" type="button">화면닫기</button>
-      <span id="deploymentPreviewTitle">배포판 목업</span>
+      <button id="closeDeploymentButton" type="button" data-i18n="closeScreen">화면닫기</button>
+      <span id="deploymentPreviewTitle" data-i18n="deployment">배포판</span>
     </div>
-    <iframe id="deploymentFrame" title="프로젝트 배포판 목업"></iframe>
+    <iframe id="deploymentFrame" title="프로젝트 배포판 목업" data-i18n-title="deploymentFrameTitle"></iframe>
   </div>
 
+  <script src="kiosk-i18n.js"></script>
   <script>
     const projectsTable = document.getElementById("projects");
     const message = document.getElementById("message");
@@ -107,43 +115,153 @@
     const modal = document.getElementById("projectModal");
     const modalStudentId = document.getElementById("modalStudentId");
     const modalProjectName = document.getElementById("modalProjectName");
-    const modalProjectProgress = document.getElementById("modalProjectProgress");
     const deploymentBlock = document.getElementById("deploymentBlock");
     const deploymentUrlText = document.getElementById("deploymentUrlText");
+    const projectDescriptionBlock = document.getElementById("projectDescriptionBlock");
+    const projectDescriptionText = document.getElementById("projectDescriptionText");
     const openDeploymentButton = document.getElementById("openDeploymentButton");
     const deploymentPreview = document.getElementById("deploymentPreview");
     const closeDeploymentButton = document.getElementById("closeDeploymentButton");
     const deploymentFrame = document.getElementById("deploymentFrame");
     const deploymentPreviewTitle = document.getElementById("deploymentPreviewTitle");
     const projectScreenshotBlock = document.getElementById("projectScreenshotBlock");
-    const modalProfessorFeedback = document.getElementById("modalProfessorFeedback");
     const modalCommentList = document.getElementById("modalCommentList");
     const closeModalButton = document.getElementById("closeModalButton");
     const commentForm = document.getElementById("commentForm");
     const commentAuthorInput = document.getElementById("commentAuthorInput");
     const commentInput = document.getElementById("commentInput");
-    const projectScheduleList = document.getElementById("projectScheduleList");
+    const languageButtons = document.querySelectorAll(".language-button");
+    const refreshPageButton = document.getElementById("refreshPageButton");
+    const {
+      createKioskI18n,
+      formatLocalizedProjectName
+    } = window.KioskI18n;
+    let allProjects = [];
     let latestProjects = [];
     let latestUsers = [];
+    let projectsLoaded = false;
     let activeProjectId = null;
-    let activeProjectProgress = "";
     let activeDeploymentUrl = "";
     let activeFrameStatus = null;
-    let currentDeadline = "2026-07-31";
+    let activeProject = null;
+    let activeComments = [];
+    let activeUser = null;
+    let currentI18n = createKioskI18n(readSavedLanguage());
     const frameCheckCache = new Map();
-    const recommendedPhases = [
-      "기획",
-      "프로토타입",
-      "실제 제작 시작",
-      "최종 테스트",
-      "완료"
-    ];
 
-    function setTopNavLinks() {
-      document.querySelectorAll("[data-nav-route]").forEach((link) => {
-        link.href = `${location.origin}/${link.dataset.navRoute}`;
+    function readSavedLanguage() {
+      try {
+        return localStorage.getItem("kiosk-language") || "ko";
+      } catch {
+        return "ko";
+      }
+    }
+
+    function saveLanguage(locale) {
+      try {
+        localStorage.setItem("kiosk-language", locale);
+      } catch {
+        // The language still changes when browser storage is unavailable.
+      }
+    }
+
+    function t(key, values) {
+      return currentI18n.t(key, values);
+    }
+
+    function getDisplayProjectName(project) {
+      return formatLocalizedProjectName(
+        project.studentId,
+        project.projectName,
+        currentI18n.locale
+      );
+    }
+
+    function applyFixedTranslations() {
+      document.title = t("pageTitle");
+      document.documentElement.lang = currentI18n.locale;
+      document.documentElement.dir = currentI18n.direction;
+
+      document.querySelectorAll("[data-i18n]").forEach((element) => {
+        element.textContent = t(element.dataset.i18n);
+      });
+      document.querySelectorAll("[data-i18n-placeholder]").forEach((element) => {
+        element.placeholder = t(element.dataset.i18nPlaceholder);
+      });
+      document.querySelectorAll("[data-i18n-aria-label]").forEach((element) => {
+        element.setAttribute("aria-label", t(element.dataset.i18nAriaLabel));
+      });
+      document.querySelectorAll("[data-i18n-title]").forEach((element) => {
+        element.title = t(element.dataset.i18nTitle);
       });
     }
+
+    function setLanguage(locale, persist = true) {
+      currentI18n = createKioskI18n(locale);
+      if (persist) saveLanguage(currentI18n.locale);
+
+      languageButtons.forEach((button) => {
+        const isActive = button.dataset.language === currentI18n.locale;
+        button.classList.toggle("active", isActive);
+        button.setAttribute("aria-pressed", String(isActive));
+      });
+
+      applyFixedTranslations();
+      if (projectsLoaded) renderProjectsTable();
+      if (activeUser && userModal.classList.contains("open")) renderUserProjectList(activeUser);
+      if (modal.classList.contains("open")) {
+        if (activeProject) {
+          modalProjectName.textContent = getDisplayProjectName(activeProject);
+        }
+        renderComments(activeComments);
+        if (activeProject) renderProjectScreenshot(activeProject);
+        applyDeploymentButtonStatus(activeFrameStatus);
+      }
+      if (deploymentPreview.classList.contains("open") && activeProject) {
+        deploymentPreviewTitle.textContent = t("deploymentMockupTitle", {
+          projectName: getDisplayProjectName(activeProject)
+        });
+      }
+    }
+
+    languageButtons.forEach((button) => {
+      button.addEventListener("click", () => setLanguage(button.dataset.language));
+    });
+    refreshPageButton.addEventListener("click", () => location.reload());
+    const studentNames = {
+      kopo01: "강태욱",
+      kopo02: "고근민",
+      kopo03: "고성인",
+      kopo04: "김예담",
+      kopo05: "박건률",
+      kopo06: "박우성",
+      kopo07: "박현영",
+      kopo08: "박형빈",
+      kopo09: "변재웅",
+      kopo10: "황준열",
+      kopo11: "이세윤",
+      kopo12: "이승미",
+      kopo13: "이재빈",
+      kopo14: "전재용",
+      kopo15: "정유라",
+      kopo16: "조수원",
+      kopo17: "주갑열",
+      kopo18: "홍정찬",
+      kopo19: "황지연",
+      kopo20: "김시온",
+      kopo21: "김여원",
+      kopo22: "김정우",
+      kopo23: "박상우",
+      kopo24: "박현우",
+      kopo25: "유혜린",
+      kopo26: "이재훈",
+      kopo27: "최리안",
+      kopo29: "정윤호",
+      kopo30: "박연우",
+      kopo31: "서동재",
+      kopo32: "강산",
+      kopo33: "조현명"
+    };
 
     function getProjectsApiUrl() {
       if (location.protocol === "file:") {
@@ -151,14 +269,6 @@
       }
 
       return "/api/projects";
-    }
-
-    function getSettingsApiUrl() {
-      if (location.protocol === "file:") {
-        return "http://localhost:703/api/settings";
-      }
-
-      return "/api/settings";
     }
 
     function getFrameCheckApiUrl(targetUrl) {
@@ -181,7 +291,7 @@
 
     async function checkFrameStatus(targetUrl) {
       if (!targetUrl) {
-        return { frameAllowed: false, reason: "링크가 없습니다." };
+        return { frameAllowed: false, reason: t("noLinkReason") };
       }
 
       if (frameCheckCache.has(targetUrl)) {
@@ -190,13 +300,17 @@
 
       const statusRequest = readJson(await fetch(getFrameCheckApiUrl(targetUrl)))
         .then((data) => ({
+          checked: data.checked !== false,
+          reachable: data.reachable !== false,
+          notFound: Boolean(data.notFound),
+          status: Number(data.status || 0),
           frameAllowed: Boolean(data.frameAllowed),
           reason: data.reason || ""
         }))
         .catch((error) => ({
           checked: false,
           frameAllowed: true,
-          reason: `iframe 확인 실패: ${error.message}`
+          reason: t("iframeCheckFailed", { message: error.message })
         }));
 
       frameCheckCache.set(targetUrl, statusRequest);
@@ -208,17 +322,25 @@
     async function attachFrameStatuses(projects) {
       return Promise.all(projects.map(async (project) => ({
         ...project,
-        frameStatus: project.deploymentUrl ? await checkFrameStatus(project.deploymentUrl) : null
+        frameStatus: project.frameStatus
+          || (project.deploymentUrl ? await checkFrameStatus(project.deploymentUrl) : null)
       })));
     }
 
     function getMockupButtonLabel(project) {
-      if (!project.deploymentUrl) return "링크 없음";
-      if (project.frameStatus && project.frameStatus.frameAllowed === false) return "새 창에서 열기";
-      return "목업 보기";
+      if (!project.deploymentUrl) return t("noLink");
+      if (project.frameStatus && project.frameStatus.checked === false) return t("unavailable");
+      if (project.frameStatus && project.frameStatus.reachable === false) return t("unavailable");
+      if (project.frameStatus && project.frameStatus.frameAllowed === false) return t("openNewWindow");
+      return t("portfolioButton");
     }
 
     function getMockupButtonClass(project) {
+      if (project.frameStatus
+        && (project.frameStatus.checked === false || project.frameStatus.reachable === false)) {
+        return "mockup-link-button failed";
+      }
+
       if (project.frameStatus && project.frameStatus.frameAllowed === false) {
         return "mockup-link-button warning";
       }
@@ -226,21 +348,59 @@
       return "mockup-link-button";
     }
 
+    function getConnectionStatusMarkup(project) {
+      if (!project.deploymentUrl) {
+        return `<span class="connection-status failed">${escapeHtml(t("connectionCheckFailed"))}</span>`;
+      }
+
+      if (!project.frameStatus) {
+        return `<span class="connection-status checking">${escapeHtml(t("checking"))}</span>`;
+      }
+
+      if (project.frameStatus.checked === false) {
+        return `<span class="connection-status failed">${escapeHtml(t("unavailable"))}</span>`;
+      }
+
+      if (project.frameStatus.reachable === false) {
+        if (project.frameStatus.notFound) {
+          return `<span class="connection-status failed">${escapeHtml(t("page404"))}</span>`;
+        }
+
+        return `<span class="connection-status failed">HTTP ${project.frameStatus.status || escapeHtml(t("error"))}</span>`;
+      }
+
+      if (project.frameStatus.frameAllowed === false) {
+        return `<span class="connection-status blocked">${escapeHtml(t("newWindowAvailable"))}</span>`;
+      }
+
+      return `<span class="connection-status available">${escapeHtml(t("available"))}</span>`;
+    }
+
     function applyDeploymentButtonStatus(frameStatus) {
       if (!activeDeploymentUrl) return;
 
+      if (frameStatus
+        && (frameStatus.checked === false || frameStatus.reachable === false)) {
+        openDeploymentButton.textContent = t("unavailable");
+        openDeploymentButton.disabled = true;
+        openDeploymentButton.classList.remove("warning");
+        return;
+      }
+
+      openDeploymentButton.disabled = false;
+
       if (frameStatus && frameStatus.frameAllowed === false) {
-        openDeploymentButton.textContent = "새 창에서 열기";
+        openDeploymentButton.textContent = t("openNewWindow");
         openDeploymentButton.classList.add("warning");
         return;
       }
 
-      openDeploymentButton.textContent = "배포판 목업 열기";
+      openDeploymentButton.textContent = t("openDeploymentMockup");
       openDeploymentButton.classList.remove("warning");
     }
 
     function formatViewCount(viewCount) {
-      return `조회수 ${Number(viewCount || 0)}회`;
+      return t("viewCount", { count: Number(viewCount || 0) });
     }
 
     function incrementProjectViewCount(projectId) {
@@ -291,87 +451,8 @@
       ].join(":");
     }
 
-    function formatUpdatedHour(isoString) {
-      if (!isoString) return "-";
-
-      const date = new Date(isoString);
-      if (Number.isNaN(date.getTime())) return "-";
-
-      return [
-        date.getFullYear(),
-        pad(date.getMonth() + 1),
-        pad(date.getDate())
-      ].join("-") + " " + pad(date.getHours()) + "시";
-    }
-
-    function formatDeadlineCountdown(now, deadline) {
-      const diffMs = deadline.getTime() - now.getTime();
-
-      if (diffMs <= 0) {
-        return "D-day";
-      }
-
-      const totalMinutes = Math.floor(diffMs / 60000);
-      const days = Math.floor(totalMinutes / 1440);
-      const hours = Math.floor((totalMinutes % 1440) / 60);
-      const minutes = totalMinutes % 60;
-
-      return `D-${days} ${hours}h ${minutes}m`;
-    }
-
-    function formatDate(date) {
-      return [
-        date.getFullYear(),
-        pad(date.getMonth() + 1),
-        pad(date.getDate())
-      ].join("-");
-    }
-
-    function buildRecommendedSchedule(now, deadlineText) {
-      const [year, month, day] = deadlineText.split("-").map(Number);
-      const remainingPhases = (() => {
-        const currentIndex = recommendedPhases.indexOf(activeProjectProgress);
-        if (currentIndex === -1) {
-          return recommendedPhases;
-        }
-
-        return recommendedPhases.slice(currentIndex);
-      })();
-      const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-      const end = new Date(year, month - 1, day);
-      const remainingDays = Math.max(0, Math.ceil((end - today) / 86400000));
-
-      if (remainingDays === 0) {
-        return remainingPhases.map((phase) => ({ phase, dueDate: formatDate(end) }));
-      }
-
-      return remainingPhases.map((phase, index) => {
-        const offset = Math.ceil(((index + 1) * remainingDays) / remainingPhases.length);
-        const dueDate = new Date(today);
-        dueDate.setDate(today.getDate() + offset);
-
-        return { phase, dueDate: formatDate(dueDate > end ? end : dueDate) };
-      });
-    }
-
-    function updateDeadlineClock() {
-      const now = new Date();
-      const [year, month, day] = currentDeadline.split("-").map(Number);
-      const deadline = new Date(year, month - 1, day, 23, 59, 59);
-
-      document.getElementById("currentTime").textContent = formatCurrentTime(now);
-      document.getElementById("deadlineText").textContent = currentDeadline;
-      document.getElementById("deadlineCountdown").textContent = formatDeadlineCountdown(now, deadline);
-      renderRecommendedSchedule(now);
-    }
-
-    function renderRecommendedSchedule(now = new Date()) {
-      projectScheduleList.innerHTML = buildRecommendedSchedule(now, currentDeadline).map((item) => `
-        <article class="schedule-item">
-          <strong>${escapeHtml(item.phase)}</strong>
-          <span>${escapeHtml(item.dueDate)}까지</span>
-        </article>
-      `).join("");
+    function updateCurrentTime() {
+      document.getElementById("currentTime").textContent = formatCurrentTime(new Date());
     }
 
     function formatCommentTime(isoString) {
@@ -384,72 +465,94 @@
 
       if (!contentType.includes("application/json")) {
         const text = await response.text();
-        throw new Error(text.trim().slice(0, 50) || "JSON 응답이 아닙니다.");
+        throw new Error(text.trim().slice(0, 50) || t("jsonResponseError"));
       }
 
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.message || data.error || "요청을 처리하지 못했습니다.");
+        throw new Error(data.message || data.error || t("requestFailed"));
       }
 
       return data;
     }
 
-    async function loadProjects() {
-      try {
-        const response = await fetch(getProjectsApiUrl());
-        const data = await readJson(response);
-        latestProjects = await attachFrameStatuses(data.projects);
-        latestUsers = groupProjectsByStudent(latestProjects);
-
-        projectsTable.innerHTML = latestUsers.map((user, index) => `
+    function renderProjectsTable() {
+      projectsTable.innerHTML = latestUsers.map((user, index) => `
           <article class="user-row" tabindex="0" data-index="${index}">
             <button class="user-name-button" type="button" data-index="${index}">
-              <strong>${escapeHtml(user.studentId)}</strong>
-              <span>${escapeHtml(formatUpdatedHour(user.latestUpdatedAt))}</span>
+              <strong dir="ltr">${escapeHtml(user.studentId)}</strong>
+              <span dir="auto">${escapeHtml(studentNames[user.studentId] || t("nameNotRegistered"))}</span>
             </button>
             <div class="project-card-list">
               ${user.projects.map((project) => `
                 <section class="project-summary-card">
                   <div class="project-summary-main">
-                    <strong>${escapeHtml(project.projectName)}</strong>
+                    <div class="project-summary-title">
+                      <strong dir="auto">${escapeHtml(getDisplayProjectName(project))}</strong>
+                      ${getConnectionStatusMarkup(project)}
+                    </div>
+                    ${project.screenshotUrl || project.screenshotPath ? `
+                      <div class="project-summary-screenshot">
+                        <img
+                          src="${escapeHtml(project.screenshotUrl || project.screenshotPath)}"
+                          alt="${escapeHtml(t("screenshotAlt", { projectName: project.projectName }))}"
+                          loading="lazy"
+                        >
+                      </div>
+                    ` : `
+                      <div class="project-summary-screenshot empty" aria-hidden="true">
+                        <span>${escapeHtml(t("screenshotPending"))}</span>
+                      </div>
+                    `}
                     <div class="project-progress-line">
-                      <span>${escapeHtml(project.progress)}</span>
                       <em data-view-count-project-id="${project.id}">${escapeHtml(formatViewCount(project.viewCount))}</em>
                     </div>
-                  </div>
-                  <div class="project-summary-meta">
-                    ${project.latestComment ? '<span class="comment-badge">코멘트 있음</span>' : '<span class="comment-badge quiet">코멘트 없음</span>'}
-                    <span>${escapeHtml(formatUpdatedHour(project.updatedAt))}</span>
                   </div>
                   <button
                     class="${getMockupButtonClass(project)}"
                     type="button"
                     data-project-id="${project.id}"
                     data-mockup-url="${escapeHtml(project.deploymentUrl || "")}"
-                    ${project.deploymentUrl ? "" : "disabled"}
+                    ${project.deploymentUrl
+                      && (!project.frameStatus
+                        || (project.frameStatus.checked !== false
+                          && project.frameStatus.reachable !== false))
+                      ? ""
+                      : "disabled"}
                   >${escapeHtml(getMockupButtonLabel(project))}</button>
                 </section>
               `).join("")}
+              ${user.projects.length % 2 === 1 ? `
+                <div class="project-summary-placeholder" aria-hidden="true"></div>
+              ` : ""}
             </div>
           </article>
         `).join("");
 
-        message.textContent = `${latestUsers.length}명 / ${latestProjects.length}개 프로젝트 표시 중`;
-      } catch (error) {
-        message.textContent = `오류: ${error.message}`;
-      }
+      message.textContent = t("projectCount", {
+        users: latestUsers.length,
+        projects: latestProjects.length
+      });
     }
 
-    async function loadSettings() {
+    async function loadProjects() {
       try {
-        const response = await fetch(getSettingsApiUrl());
+        const response = await fetch(getProjectsApiUrl());
         const data = await readJson(response);
-        currentDeadline = data.settings.deadline || "2026-07-31";
-        updateDeadlineClock();
+        allProjects = data.projects;
+        const completedProjects = allProjects.filter((project) => project.progress === "완료");
+
+        latestProjects = completedProjects;
+        latestUsers = groupProjectsByStudent(latestProjects);
+        projectsLoaded = true;
+        renderProjectsTable();
+
+        latestProjects = await attachFrameStatuses(completedProjects);
+        latestUsers = groupProjectsByStudent(latestProjects);
+        renderProjectsTable();
       } catch (error) {
-        message.textContent = `오류: ${error.message}`;
+        message.textContent = t("errorMessage", { message: error.message });
       }
     }
 
@@ -490,7 +593,7 @@
 
     function renderComments(comments) {
       if (!comments.length) {
-        modalCommentList.innerHTML = '<p class="empty-copy">아직 등록된 코멘트가 없습니다.</p>';
+        modalCommentList.innerHTML = `<p class="empty-copy">${escapeHtml(t("noComments"))}</p>`;
         return;
       }
 
@@ -498,9 +601,9 @@
         <article class="comment-card">
           <div class="comment-meta">
             <span class="comment-time">${escapeHtml(formatCommentTime(comment.createdAt))}</span>
-            <span class="comment-author">${escapeHtml(comment.author === "anonymous" ? "작성자 없음" : comment.author || "작성자 없음")}</span>
+            <span class="comment-author" dir="auto">${escapeHtml(comment.author === "anonymous" ? t("noAuthor") : comment.author || t("noAuthor"))}</span>
           </div>
-          <div class="comment-copy">${escapeHtml(comment.comment)}</div>
+          <div class="comment-copy" dir="auto">${escapeHtml(comment.comment)}</div>
         </article>
       `).join("");
     }
@@ -509,14 +612,14 @@
       const screenshotPath = project.screenshotUrl || project.screenshotPath || "";
 
       if (!screenshotPath) {
-        projectScreenshotBlock.innerHTML = `<p class="detail-copy">아직 등록된 스크린샷이 없습니다.</p>`;
+        projectScreenshotBlock.innerHTML = `<p class="detail-copy">${escapeHtml(t("noScreenshot"))}</p>`;
         return;
       }
 
       const targetUrl = project.deploymentUrl || screenshotPath;
       projectScreenshotBlock.innerHTML = `
         <button class="screenshot-button" type="button" data-screenshot-target="${escapeHtml(targetUrl)}">
-          <img src="${escapeHtml(screenshotPath)}" alt="${escapeHtml(project.projectName)} 스크린샷">
+          <img src="${escapeHtml(screenshotPath)}" alt="${escapeHtml(t("screenshotAlt", { projectName: project.projectName }))}">
         </button>
       `;
     }
@@ -525,18 +628,18 @@
       const project = await loadProjectDetail(projectId);
 
       activeProjectId = project.id;
-      activeProjectProgress = project.progress || "";
       activeDeploymentUrl = project.deploymentUrl || "";
       activeFrameStatus = activeDeploymentUrl ? await checkFrameStatus(activeDeploymentUrl) : null;
+      activeProject = project;
+      activeComments = project.comments;
       modalStudentId.textContent = project.studentId;
-      modalProjectName.textContent = project.projectName;
-      modalProjectProgress.textContent = `지금 진행중인 ${project.projectName}: 진행상황 ${project.progress}`;
+      modalProjectName.textContent = getDisplayProjectName(project);
       renderProjectScreenshot(project);
-      renderRecommendedSchedule();
       deploymentBlock.hidden = !activeDeploymentUrl;
       deploymentUrlText.textContent = activeDeploymentUrl;
+      projectDescriptionBlock.hidden = !project.projectDescription;
+      projectDescriptionText.textContent = project.projectDescription || "";
       applyDeploymentButtonStatus(activeFrameStatus);
-      modalProfessorFeedback.textContent = project.professorFeedback || "아직 입력된 피드백이 없습니다.";
       renderComments(project.comments);
       commentAuthorInput.value = "";
       commentInput.value = "";
@@ -545,26 +648,33 @@
     }
 
     function openUserModal(user) {
+      activeUser = user;
       userModalStudentId.textContent = user.studentId;
-      userProjectList.innerHTML = user.projects.map((project) => `
+      renderUserProjectList(user);
+      userModal.classList.add("open");
+    }
+
+    function renderUserProjectList(user) {
+      const userProjects = allProjects.filter((project) => project.studentId === user.studentId);
+      userProjectList.innerHTML = userProjects.map((project) => `
         <button class="project-option" type="button" data-project-id="${project.id}">
-          <strong>${escapeHtml(project.projectName)}</strong>
-          <span>진행상황: ${escapeHtml(project.progress)}</span>
-          <em>${project.latestComment ? escapeHtml(project.latestComment) : "코멘트 없음"}</em>
+          <strong dir="auto">${escapeHtml(getDisplayProjectName(project))}</strong>
+          <span>${escapeHtml(t("commentCount", { count: Number(project.commentCount || 0) }))}</span>
         </button>
       `).join("");
-      userModal.classList.add("open");
     }
 
     function closeUserModal() {
       userModal.classList.remove("open");
+      activeUser = null;
     }
 
     function closeProjectModal() {
       modal.classList.remove("open");
       activeProjectId = null;
-      activeProjectProgress = "";
       activeFrameStatus = null;
+      activeProject = null;
+      activeComments = [];
     }
 
     function openDeploymentFrame(title, url) {
@@ -580,17 +690,24 @@
       try {
         const frameStatus = project.frameStatus || await checkFrameStatus(project.deploymentUrl);
 
-        if (!frameStatus.frameAllowed) {
-          window.open(project.deploymentUrl, "_blank", "noopener");
-          recordProjectView(project.id, "external_open");
-          message.textContent = frameStatus.reason || "iframe에서 열리지 않아 새 창으로 열었습니다.";
+        if (frameStatus.checked === false || frameStatus.reachable === false) {
+          message.textContent = t("portfolioUnavailable");
           return;
         }
 
-        openDeploymentFrame(`${project.projectName} 배포판 목업`, project.deploymentUrl);
+        if (!frameStatus.frameAllowed) {
+          window.open(project.deploymentUrl, "_blank", "noopener");
+          recordProjectView(project.id, "external_open");
+          message.textContent = t("iframeOpenedNew");
+          return;
+        }
+
+        openDeploymentFrame(t("deploymentMockupTitle", {
+          projectName: getDisplayProjectName(project)
+        }), project.deploymentUrl);
         recordProjectView(project.id, "mockup_view");
       } catch (error) {
-        message.textContent = `iframe 확인 실패: ${error.message}`;
+        message.textContent = t("iframeCheckFailed", { message: error.message });
       }
     }
 
@@ -598,7 +715,8 @@
       if (!activeDeploymentUrl) return;
 
       const project = {
-        projectName: modalProjectName.textContent,
+        studentId: activeProject?.studentId || "",
+        projectName: activeProject?.projectName || modalProjectName.textContent,
         id: activeProjectId,
         deploymentUrl: activeDeploymentUrl,
         frameStatus: activeFrameStatus
@@ -631,7 +749,7 @@
       try {
         openUserModal(user);
       } catch (error) {
-        message.textContent = `오류: ${error.message}`;
+        message.textContent = t("errorMessage", { message: error.message });
       }
     });
 
@@ -649,7 +767,7 @@
       try {
         openUserModal(user);
       } catch (error) {
-        message.textContent = `오류: ${error.message}`;
+        message.textContent = t("errorMessage", { message: error.message });
       }
     });
 
@@ -661,7 +779,7 @@
         closeUserModal();
         await openProjectModal(Number(button.dataset.projectId));
       } catch (error) {
-        message.textContent = `오류: ${error.message}`;
+        message.textContent = t("errorMessage", { message: error.message });
       }
     });
 
@@ -683,7 +801,7 @@
         await openProjectModal(activeProjectId);
         await loadProjects();
       } catch (error) {
-        message.textContent = `오류: ${error.message}`;
+        message.textContent = t("errorMessage", { message: error.message });
       }
     });
 
@@ -711,7 +829,7 @@
     });
     projectScreenshotBlock.addEventListener("error", (event) => {
       if (event.target.tagName !== "IMG") return;
-      projectScreenshotBlock.innerHTML = `<p class="detail-copy">아직 등록된 스크린샷이 없습니다.</p>`;
+      projectScreenshotBlock.innerHTML = `<p class="detail-copy">${escapeHtml(t("noScreenshot"))}</p>`;
     }, true);
 
     document.addEventListener("keydown", (event) => {
@@ -722,12 +840,11 @@
       }
     });
 
-    setTopNavLinks();
+    setLanguage(currentI18n.locale, false);
     loadProjects();
-    loadSettings();
+    updateCurrentTime();
     setInterval(loadProjects, 30000);
-    setInterval(loadSettings, 10000);
-    setInterval(updateDeadlineClock, 1000);
+    setInterval(updateCurrentTime, 1000);
   </script>
 </body>
 </html>

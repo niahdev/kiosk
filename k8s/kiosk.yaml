@@ -132,6 +132,10 @@ spec:
                   key: mysql-root-password
             - name: DB_NAME
               value: kiosk
+            - name: FRAME_CHECK_TIMEOUT_MS
+              value: "5000"
+            - name: FRAME_CHECK_CACHE_TTL_MS
+              value: "300000"
           volumeMounts:
             - name: screenshots
               mountPath: /app/public/screenshots
@@ -168,6 +172,16 @@ metadata:
   namespace: kiosk
 spec:
   rules:
+    - host: kopo05-web.std.kopoctc.kr
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: kiosk-app
+                port:
+                  number: 7003
     - host: www.kiosk.copoctc.com
       http:
         paths:

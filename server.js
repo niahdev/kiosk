@@ -17,9 +17,17 @@ const { validateProjectInput, validateProjectCommentInput } = require("./project
 const { validateProjectViewEventInput } = require("./project-view-event");
 const { validateDeadlineInput } = require("./schedule");
 const { checkFrameAvailability } = require("./frame-check");
+const {
+  createFrameCheckCache,
+  resolveFrameCheckCacheTtl
+} = require("./frame-check-cache");
 const { DEFAULT_OUTPUT_DIR, captureScreenshotsFromDatabase } = require("./screenshot-capture");
+const { getStaticAsset } = require("./static-assets");
 
 const port = Number(process.env.PORT || 3000);
+const frameCheckCache = createFrameCheckCache({
+  ttlMs: resolveFrameCheckCacheTtl()
+});
 
 function sendJson(res, statusCode, body) {
   res.writeHead(statusCode, {
@@ -35,10 +43,10 @@ async function sendHtml(res, fileName) {
   res.end(html);
 }
 
-async function sendCss(res, fileName) {
-  const css = await fs.readFile(path.join(__dirname, fileName), "utf8");
-  res.writeHead(200, { "Content-Type": "text/css; charset=utf-8" });
-  res.end(css);
+async function sendTextAsset(res, asset) {
+  const contents = await fs.readFile(path.join(__dirname, asset.fileName), "utf8");
+  res.writeHead(200, { "Content-Type": asset.contentType });
+  res.end(contents);
 }
 
 function sendPng(res, image) {
@@ -83,13 +91,9 @@ const server = http.createServer(async (req, res) => {
       return;
     }
 
-    if (url.pathname === "/kiosk.css") {
-      await sendCss(res, "kiosk.css");
-      return;
-    }
-
-    if (url.pathname === "/kiosk-print.css") {
-      await sendCss(res, "kiosk-print.css");
+    const staticAsset = getStaticAsset(url.pathname);
+    if (staticAsset && req.method === "GET") {
+      await sendTextAsset(res, staticAsset);
       return;
     }
 
@@ -133,14 +137,29 @@ const server = http.createServer(async (req, res) => {
     }
 
     if (url.pathname === "/api/frame-check" && req.method === "GET") {
-      const result = await checkFrameAvailability(url.searchParams.get("url") || "");
+      const targetUrl = url.searchParams.get("url") || "";
+      let result = frameCheckCache.get(targetUrl);
+
+      if (!result) {
+        result = await checkFrameAvailability(targetUrl);
+        if (targetUrl) {
+          frameCheckCache.set(targetUrl, result);
+        }
+      }
+
       sendJson(res, result.ok ? 200 : 400, result);
       return;
     }
 
     if (url.pathname === "/api/projects" && req.method === "GET") {
       const projects = await fetchProjects();
-      sendJson(res, 200, { source: "database", projects });
+      const projectsWithFrameStatuses = projects.map((project) => ({
+        ...project,
+        frameStatus: project.deploymentUrl
+          ? frameCheckCache.get(project.deploymentUrl)
+          : null
+      }));
+      sendJson(res, 200, { source: "database", projects: projectsWithFrameStatuses });
       return;
     }
 

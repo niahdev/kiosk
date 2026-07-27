@@ -20,6 +20,8 @@ services:
       DB_USER: root
       DB_PASSWORD: kioskpass
       DB_NAME: kiosk
+      FRAME_CHECK_TIMEOUT_MS: "5000"
+      FRAME_CHECK_CACHE_TTL_MS: "300000"
     volumes:
       - ./public/screenshots:/app/public/screenshots
     depends_on:
