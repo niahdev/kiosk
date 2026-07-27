@@ -31,7 +31,7 @@
 키오스크 PC에서 가장 간단하게 실행하는 방법입니다.
 
 ```powershell
-git clone https://github.com/dejava-daisky/kiosk.git
+git clone https://github.com/niahdev/kiosk.git
 cd kiosk
 docker compose up -d
 ```
