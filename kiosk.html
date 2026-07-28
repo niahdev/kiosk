@@ -158,6 +158,7 @@
     let activeUser = null;
     let currentI18n = createKioskI18n(readSavedLanguage());
     const frameCheckCache = new Map();
+    const EXTERNAL_WINDOW_TIMEOUT_MS = 2 * 60 * 1000;
 
     function readSavedLanguage() {
       try {
@@ -703,6 +704,26 @@
       deploymentPreview.setAttribute("aria-hidden", "false");
     }
 
+    function openTimedExternalWindow(url) {
+      const externalWindow = window.open(url, "_blank");
+      if (!externalWindow) return false;
+
+      try {
+        externalWindow.opener = null;
+      } catch {
+        // Keep the window reference so the kiosk can still close it on time.
+      }
+
+      setTimeout(() => {
+        if (!externalWindow.closed) {
+          externalWindow.close();
+          window.focus();
+        }
+      }, EXTERNAL_WINDOW_TIMEOUT_MS);
+
+      return true;
+    }
+
     async function openProjectDeployment(project) {
       if (!project || !project.deploymentUrl) return;
 
@@ -715,9 +736,10 @@
         }
 
         if (!frameStatus.frameAllowed) {
-          window.open(project.deploymentUrl, "_blank", "noopener");
-          recordProjectView(project.id, "external_open");
-          message.textContent = t("iframeOpenedNew");
+          if (openTimedExternalWindow(project.deploymentUrl)) {
+            recordProjectView(project.id, "external_open");
+            message.textContent = t("iframeOpenedNew");
+          }
           return;
         }
 

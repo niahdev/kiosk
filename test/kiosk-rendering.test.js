@@ -157,3 +157,16 @@ test("uses localized project titles in cards, lists, and details", () => {
   assert.ok(source.includes("getDisplayProjectName(project)"));
   assert.ok(source.includes("modalProjectName.textContent = getDisplayProjectName(project)"));
 });
+
+test("closes iframe-blocked external deployments after two minutes", () => {
+  const source = fs.readFileSync(
+    path.join(__dirname, "..", "kiosk.html"),
+    "utf8"
+  );
+
+  assert.match(source, /EXTERNAL_WINDOW_TIMEOUT_MS\s*=\s*2 \* 60 \* 1000/);
+  assert.match(source, /setTimeout\(\(\) => \{/);
+  assert.match(source, /externalWindow\.close\(\)/);
+  assert.match(source, /window\.focus\(\)/);
+  assert.match(source, /openTimedExternalWindow\(project\.deploymentUrl\)/);
+});
