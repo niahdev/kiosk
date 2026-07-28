@@ -705,14 +705,8 @@
     }
 
     function openTimedExternalWindow(url) {
-      const externalWindow = window.open(url, "_blank");
+      const externalWindow = window.open(url, "kioskExternalPreview", "popup=yes");
       if (!externalWindow) return false;
-
-      try {
-        externalWindow.opener = null;
-      } catch {
-        // Keep the window reference so the kiosk can still close it on time.
-      }
 
       setTimeout(() => {
         if (!externalWindow.closed) {

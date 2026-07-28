@@ -169,4 +169,6 @@ test("closes iframe-blocked external deployments after two minutes", () => {
   assert.match(source, /externalWindow\.close\(\)/);
   assert.match(source, /window\.focus\(\)/);
   assert.match(source, /openTimedExternalWindow\(project\.deploymentUrl\)/);
+  assert.match(source, /window\.open\(url, "kioskExternalPreview"/);
+  assert.doesNotMatch(source, /externalWindow\.opener\s*=\s*null/);
 });
