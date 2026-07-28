@@ -10,6 +10,7 @@ CREATE TABLE IF NOT EXISTS student_project (
     project_name VARCHAR(255) NOT NULL,
     progress VARCHAR(100) NOT NULL,
     deployment_url VARCHAR(500) NULL,
+    github_url VARCHAR(500) NULL,
     screenshot_path VARCHAR(500) NULL,
     professor_feedback TEXT NULL,
     project_description LONGTEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL,

@@ -9,6 +9,7 @@ test("accepts project input for one student project", () => {
       projectName: " 프로젝트 A ",
       progress: "프로토타입",
       deploymentUrl: " https://example.com/kopo01 ",
+      githubUrl: " https://github.com/example/kopo01 ",
       professorFeedback: "README 보강",
       projectDescription: " 기획부터 배포까지\n직접 구현했습니다. "
     }),
@@ -19,9 +20,25 @@ test("accepts project input for one student project", () => {
         projectName: "프로젝트 A",
         progress: "프로토타입",
         deploymentUrl: "https://example.com/kopo01",
+        githubUrl: "https://github.com/example/kopo01",
         professorFeedback: "README 보강",
         projectDescription: "기획부터 배포까지\n직접 구현했습니다."
       }
+    }
+  );
+});
+
+test("rejects a repository url outside github.com", () => {
+  assert.deepEqual(
+    validateProjectInput({
+      studentId: "kopo01",
+      projectName: "프로젝트 A",
+      progress: "기획",
+      githubUrl: "https://gitlab.com/example/project"
+    }),
+    {
+      ok: false,
+      error: "GitHub 주소는 github.com 주소로 입력하세요."
     }
   );
 });

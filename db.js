@@ -44,6 +44,7 @@ async function ensureProjectTables(connection) {
       project_name VARCHAR(255) NOT NULL,
       progress VARCHAR(100) NOT NULL,
       deployment_url VARCHAR(500) NULL,
+      github_url VARCHAR(500) NULL,
       professor_feedback TEXT NULL,
       project_description LONGTEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL,
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -61,8 +62,14 @@ async function ensureProjectTables(connection) {
   await ensureTableColumn(
     connection,
     "student_project",
+    "github_url",
+    "github_url VARCHAR(500) NULL AFTER deployment_url"
+  );
+  await ensureTableColumn(
+    connection,
+    "student_project",
     "screenshot_path",
-    "screenshot_path VARCHAR(500) NULL AFTER deployment_url"
+    "screenshot_path VARCHAR(500) NULL AFTER github_url"
   );
   await ensureTableColumn(
     connection,
@@ -156,6 +163,7 @@ function mapProjectRows(rows) {
     projectName: String(row.project_name ?? ""),
     progress: String(row.progress ?? ""),
     deploymentUrl: String(row.deployment_url ?? ""),
+    githubUrl: String(row.github_url ?? ""),
     screenshotPath: String(row.screenshot_path ?? ""),
     professorFeedback: String(row.professor_feedback ?? ""),
     projectDescription: String(row.project_description ?? ""),
@@ -174,6 +182,7 @@ async function fetchProjectRows(connection) {
       p.project_name,
       p.progress,
       p.deployment_url,
+      p.github_url,
       p.screenshot_path,
       p.professor_feedback,
       p.project_description,
@@ -224,6 +233,7 @@ async function fetchProjectById(projectId) {
           project_name,
           progress,
           deployment_url,
+          github_url,
           screenshot_path,
           professor_feedback,
           project_description,
@@ -258,6 +268,7 @@ async function fetchProjectById(projectId) {
       projectName: String(rows[0].project_name ?? ""),
       progress: String(rows[0].progress ?? ""),
       deploymentUrl: String(rows[0].deployment_url ?? ""),
+      githubUrl: String(rows[0].github_url ?? ""),
       screenshotPath: String(rows[0].screenshot_path ?? ""),
       professorFeedback: String(rows[0].professor_feedback ?? ""),
       projectDescription: String(rows[0].project_description ?? ""),
@@ -280,11 +291,12 @@ async function saveProject(project) {
     await ensureProjectTables(connection);
     await connection.execute(
       `
-        INSERT INTO student_project (student_id, project_name, progress, deployment_url, professor_feedback, project_description)
-        VALUES (?, ?, ?, ?, ?, ?)
+        INSERT INTO student_project (student_id, project_name, progress, deployment_url, github_url, professor_feedback, project_description)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
         ON DUPLICATE KEY UPDATE
           progress = VALUES(progress),
           deployment_url = VALUES(deployment_url),
+          github_url = VALUES(github_url),
           professor_feedback = VALUES(professor_feedback),
           project_description = VALUES(project_description)
       `,
@@ -293,6 +305,7 @@ async function saveProject(project) {
         project.projectName,
         project.progress,
         project.deploymentUrl,
+        project.githubUrl,
         project.professorFeedback,
         project.projectDescription
       ]
@@ -300,7 +313,7 @@ async function saveProject(project) {
 
     const [rows] = await connection.execute(
       `
-        SELECT id, student_id, project_name, progress, deployment_url, screenshot_path, professor_feedback, project_description
+        SELECT id, student_id, project_name, progress, deployment_url, github_url, screenshot_path, professor_feedback, project_description
         FROM student_project
         WHERE student_id = ? AND project_name = ?
       `,
@@ -313,6 +326,7 @@ async function saveProject(project) {
       projectName: String(rows[0].project_name ?? ""),
       progress: String(rows[0].progress ?? ""),
       deploymentUrl: String(rows[0].deployment_url ?? ""),
+      githubUrl: String(rows[0].github_url ?? ""),
       screenshotPath: String(rows[0].screenshot_path ?? ""),
       professorFeedback: String(rows[0].professor_feedback ?? ""),
       projectDescription: String(rows[0].project_description ?? "")
@@ -333,6 +347,7 @@ async function updateProjectById(projectId, project) {
             project_name = ?,
             progress = ?,
             deployment_url = ?,
+            github_url = COALESCE(?, github_url),
             professor_feedback = ?,
             project_description = COALESCE(?, project_description)
         WHERE id = ?
@@ -342,6 +357,7 @@ async function updateProjectById(projectId, project) {
         project.projectName,
         project.progress,
         project.deploymentUrl,
+        project.githubUrl,
         project.professorFeedback,
         project.projectDescription,
         projectId

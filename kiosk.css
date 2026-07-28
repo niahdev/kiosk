@@ -285,6 +285,17 @@ h1 {
 .project-summary-main {
   display: grid;
   gap: 6px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.project-summary-main:hover {
+  background: rgba(36, 91, 157, .04);
+}
+
+.project-summary-main:focus-visible {
+  outline: 3px solid rgba(15, 108, 115, .28);
+  outline-offset: 3px;
 }
 
 .project-summary-title {

@@ -132,6 +132,21 @@ test("places the optional project description after deployment and before commen
   assert.ok(source.includes("project.projectDescription"));
 });
 
+test("shows an optional GitHub repository directly below deployment", () => {
+  const source = fs.readFileSync(
+    path.join(__dirname, "..", "kiosk.html"),
+    "utf8"
+  );
+  const deploymentIndex = source.indexOf('id="deploymentBlock"');
+  const githubIndex = source.indexOf('id="githubBlock"');
+  const descriptionIndex = source.indexOf('id="projectDescriptionBlock"');
+
+  assert.ok(deploymentIndex < githubIndex);
+  assert.ok(githubIndex < descriptionIndex);
+  assert.ok(source.includes("project.githubUrl"));
+  assert.ok(source.includes('window.open(activeGithubUrl, "_blank", "noopener")'));
+});
+
 test("uses localized project titles in cards, lists, and details", () => {
   const source = fs.readFileSync(
     path.join(__dirname, "..", "kiosk.html"),

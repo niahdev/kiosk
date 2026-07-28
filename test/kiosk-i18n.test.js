@@ -53,6 +53,12 @@ test("uses a short localized label for prompt tips", () => {
   assert.equal(createKioskI18n("ar").t("projectProcess"), "نصائح المطالبات المستخدمة");
 });
 
+test("translates GitHub repository labels", () => {
+  assert.equal(createKioskI18n("ko").t("githubRepository"), "GitHub 저장소");
+  assert.equal(createKioskI18n("en").t("githubRepository"), "GitHub Repository");
+  assert.equal(createKioskI18n("ar").t("githubRepository"), "مستودع GitHub");
+});
+
 test("adds a localized title to mapped projects for every user", () => {
   assert.equal(
     formatLocalizedProjectName("kopo05", "호텔예약", "en"),

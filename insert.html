@@ -241,6 +241,11 @@
       </div>
 
       <label>
+        GitHub 주소
+        <input id="githubUrl" type="url" placeholder="https://github.com/username/repository" inputmode="url">
+      </label>
+
+      <label>
         사용한 프롬프트 팁
         <textarea
           id="projectDescription"
@@ -261,6 +266,7 @@
     const projectNameInput = document.getElementById("projectName");
     const progressInput = document.getElementById("progress");
     const deploymentUrlInput = document.getElementById("deploymentUrl");
+    const githubUrlInput = document.getElementById("githubUrl");
     const projectDescriptionInput = document.getElementById("projectDescription");
     const message = document.getElementById("message");
 
@@ -298,6 +304,7 @@
         projectName: projectNameInput.value,
         progress: progressInput.value,
         deploymentUrl: deploymentUrlInput.value,
+        githubUrl: githubUrlInput.value,
         professorFeedback: "",
         projectDescription: projectDescriptionInput.value
       };
@@ -314,6 +321,7 @@
         projectNameInput.value = "";
         progressInput.value = "";
         deploymentUrlInput.value = "";
+        githubUrlInput.value = "";
         projectDescriptionInput.value = "";
       } catch (error) {
         message.textContent = `오류: ${error.message}`;

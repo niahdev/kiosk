@@ -75,6 +75,12 @@
         <button class="preview-button" id="openDeploymentButton" type="button" data-i18n="openDeploymentMockup">배포판 목업 열기</button>
       </section>
 
+      <section class="detail-block" id="githubBlock" hidden>
+        <h3 data-i18n="githubRepository">GitHub 저장소</h3>
+        <p class="detail-copy" id="githubUrlText" dir="ltr"></p>
+        <button class="preview-button" id="openGithubButton" type="button" data-i18n="openGithubRepository">GitHub 저장소 열기</button>
+      </section>
+
       <section class="detail-block" id="projectDescriptionBlock" hidden>
         <h3 data-i18n="projectProcess">사용한 프롬프트 팁</h3>
         <p class="detail-copy project-description-copy" id="projectDescriptionText" dir="auto"></p>
@@ -117,6 +123,9 @@
     const modalProjectName = document.getElementById("modalProjectName");
     const deploymentBlock = document.getElementById("deploymentBlock");
     const deploymentUrlText = document.getElementById("deploymentUrlText");
+    const githubBlock = document.getElementById("githubBlock");
+    const githubUrlText = document.getElementById("githubUrlText");
+    const openGithubButton = document.getElementById("openGithubButton");
     const projectDescriptionBlock = document.getElementById("projectDescriptionBlock");
     const projectDescriptionText = document.getElementById("projectDescriptionText");
     const openDeploymentButton = document.getElementById("openDeploymentButton");
@@ -142,6 +151,7 @@
     let projectsLoaded = false;
     let activeProjectId = null;
     let activeDeploymentUrl = "";
+    let activeGithubUrl = "";
     let activeFrameStatus = null;
     let activeProject = null;
     let activeComments = [];
@@ -479,15 +489,20 @@
 
     function renderProjectsTable() {
       projectsTable.innerHTML = latestUsers.map((user, index) => `
-          <article class="user-row" tabindex="0" data-index="${index}">
-            <button class="user-name-button" type="button" data-index="${index}">
+          <article class="user-row">
+            <button class="user-name-button" type="button" data-user-index="${index}">
               <strong dir="ltr">${escapeHtml(user.studentId)}</strong>
               <span dir="auto">${escapeHtml(studentNames[user.studentId] || t("nameNotRegistered"))}</span>
             </button>
             <div class="project-card-list">
               ${user.projects.map((project) => `
                 <section class="project-summary-card">
-                  <div class="project-summary-main">
+                  <div
+                    class="project-summary-main"
+                    role="button"
+                    tabindex="0"
+                    data-project-card-id="${project.id}"
+                  >
                     <div class="project-summary-title">
                       <strong dir="auto">${escapeHtml(getDisplayProjectName(project))}</strong>
                       ${getConnectionStatusMarkup(project)}
@@ -629,6 +644,7 @@
 
       activeProjectId = project.id;
       activeDeploymentUrl = project.deploymentUrl || "";
+      activeGithubUrl = project.githubUrl || "";
       activeFrameStatus = activeDeploymentUrl ? await checkFrameStatus(activeDeploymentUrl) : null;
       activeProject = project;
       activeComments = project.comments;
@@ -637,6 +653,8 @@
       renderProjectScreenshot(project);
       deploymentBlock.hidden = !activeDeploymentUrl;
       deploymentUrlText.textContent = activeDeploymentUrl;
+      githubBlock.hidden = !activeGithubUrl;
+      githubUrlText.textContent = activeGithubUrl;
       projectDescriptionBlock.hidden = !project.projectDescription;
       projectDescriptionText.textContent = project.projectDescription || "";
       applyDeploymentButtonStatus(activeFrameStatus);
@@ -673,6 +691,7 @@
       modal.classList.remove("open");
       activeProjectId = null;
       activeFrameStatus = null;
+      activeGithubUrl = "";
       activeProject = null;
       activeComments = [];
     }
@@ -740,14 +759,24 @@
         return;
       }
 
-      const row = event.target.closest("[data-index]");
-      if (!row) return;
+      const userButton = event.target.closest("[data-user-index]");
+      if (userButton) {
+        const user = latestUsers[Number(userButton.dataset.userIndex)];
+        if (!user) return;
 
-      const user = latestUsers[Number(row.dataset.index)];
-      if (!user) return;
+        try {
+          openUserModal(user);
+        } catch (error) {
+          message.textContent = t("errorMessage", { message: error.message });
+        }
+        return;
+      }
+
+      const projectCard = event.target.closest("[data-project-card-id]");
+      if (!projectCard) return;
 
       try {
-        openUserModal(user);
+        await openProjectModal(Number(projectCard.dataset.projectCardId));
       } catch (error) {
         message.textContent = t("errorMessage", { message: error.message });
       }
@@ -757,15 +786,12 @@
       if (event.key !== "Enter" && event.key !== " ") return;
       if (event.target.closest("[data-mockup-url]")) return;
 
-      const row = event.target.closest("[data-index]");
-      if (!row) return;
+      const projectCard = event.target.closest("[data-project-card-id]");
+      if (!projectCard) return;
 
       event.preventDefault();
-      const user = latestUsers[Number(row.dataset.index)];
-      if (!user) return;
-
       try {
-        openUserModal(user);
+        await openProjectModal(Number(projectCard.dataset.projectCardId));
       } catch (error) {
         message.textContent = t("errorMessage", { message: error.message });
       }
@@ -820,6 +846,11 @@
     closeUserModalButton.addEventListener("click", closeUserModal);
     closeModalButton.addEventListener("click", closeProjectModal);
     openDeploymentButton.addEventListener("click", openDeploymentPreview);
+    openGithubButton.addEventListener("click", () => {
+      if (activeGithubUrl) {
+        window.open(activeGithubUrl, "_blank", "noopener");
+      }
+    });
     closeDeploymentButton.addEventListener("click", closeDeploymentPreview);
     projectScreenshotBlock.addEventListener("click", (event) => {
       const screenshotButton = event.target.closest("[data-screenshot-target]");

@@ -259,6 +259,11 @@
           </label>
 
           <label>
+            GitHub 주소
+            <input id="githubUrl" type="url" placeholder="https://github.com/username/repository" inputmode="url">
+          </label>
+
+          <label>
             사용한 프롬프트 팁
             <textarea
               id="projectDescription"
@@ -284,6 +289,7 @@
     const projectNameInput = document.getElementById("projectName");
     const progressInput = document.getElementById("progress");
     const deploymentUrlInput = document.getElementById("deploymentUrl");
+    const githubUrlInput = document.getElementById("githubUrl");
     const projectDescriptionInput = document.getElementById("projectDescription");
     const message = document.getElementById("message");
     let foundProjects = [];
@@ -335,6 +341,7 @@
       projectNameInput.value = project.projectName;
       progressInput.value = project.progress;
       deploymentUrlInput.value = project.deploymentUrl || "";
+      githubUrlInput.value = project.githubUrl || "";
       projectDescriptionInput.value = project.projectDescription || "";
       editForm.classList.remove("hidden");
       message.textContent = `${project.projectName} 선택됨`;
@@ -401,6 +408,7 @@
         projectName: projectNameInput.value,
         progress: progressInput.value,
         deploymentUrl: deploymentUrlInput.value,
+        githubUrl: githubUrlInput.value,
         professorFeedback: selectedProject.professorFeedback || "",
         projectDescription: projectDescriptionInput.value
       };

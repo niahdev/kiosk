@@ -11,6 +11,9 @@ function validateProjectInput(input) {
   const projectName = String(input.projectName ?? "").trim();
   const progress = String(input.progress ?? "").trim();
   const deploymentUrl = String(input.deploymentUrl ?? "").trim();
+  const githubUrl = input.githubUrl == null
+    ? null
+    : String(input.githubUrl).trim();
   const professorFeedback = String(input.professorFeedback ?? "").trim();
   const projectDescription = input.projectDescription == null
     ? null
@@ -39,6 +42,19 @@ function validateProjectInput(input) {
     }
   }
 
+  if (githubUrl) {
+    try {
+      const url = new URL(githubUrl);
+      const isHttp = url.protocol === "http:" || url.protocol === "https:";
+      const isGithub = url.hostname === "github.com" || url.hostname === "www.github.com";
+      if (!isHttp || !isGithub) {
+        return { ok: false, error: "GitHub 주소는 github.com 주소로 입력하세요." };
+      }
+    } catch (error) {
+      return { ok: false, error: "GitHub 주소는 github.com 주소로 입력하세요." };
+    }
+  }
+
   return {
     ok: true,
     project: {
@@ -46,6 +62,7 @@ function validateProjectInput(input) {
       projectName,
       progress,
       deploymentUrl,
+      githubUrl,
       professorFeedback,
       projectDescription
     }

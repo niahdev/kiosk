@@ -38,6 +38,30 @@ test("switches every fixed kiosk label while preserving user-created text", asyn
       return;
     }
 
+    if (request.url === "/api/projects/1") {
+      response.writeHead(200, { "Content-Type": "application/json" });
+      response.end(JSON.stringify({
+        project: {
+          ...projects[0],
+          githubUrl: "",
+          projectDescription: "",
+          comments: []
+        }
+      }));
+      return;
+    }
+
+    if (request.url.startsWith("/api/frame-check?")) {
+      response.writeHead(200, { "Content-Type": "application/json" });
+      response.end(JSON.stringify({
+        checked: true,
+        reachable: true,
+        frameAllowed: true,
+        status: 200
+      }));
+      return;
+    }
+
     const requestPath = request.url === "/" ? "/kiosk.html" : request.url;
     const filePath = path.join(projectRoot, requestPath.replace(/^\//, ""));
 
@@ -78,6 +102,13 @@ test("switches every fixed kiosk label while preserving user-created text", asyn
     assert.equal(await page.locator(".connection-status").textContent(), "Available");
     assert.equal(await page.locator(".mockup-link-button").textContent(), "View portfolio");
     assert.equal(await page.locator("[data-view-count-project-id='1']").textContent(), "12 views");
+
+    await page.locator(".project-summary-title strong").click();
+    await page.locator("#projectModal.modal.open").waitFor();
+    assert.equal(await page.locator("#projectModal").getAttribute("class"), "modal open");
+    assert.equal(await page.locator("#userModal").getAttribute("class"), "modal");
+    assert.equal(await page.locator("#modalProjectName").textContent(), "사용자가 만든 프로젝트");
+    await page.locator("#closeModalButton").click();
 
     const refreshButton = page.locator(".header").getByRole("button", { name: "Refresh page" });
     assert.equal(await refreshButton.getAttribute("title"), "Refresh page");
