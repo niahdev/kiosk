@@ -3,7 +3,8 @@
     "test": "node --test",
     "start": "node server.js",
     "check:db": "node scripts/check-db.js",
-    "capture:screenshots": "node scripts/capture-screenshots.js"
+    "capture:screenshot": "node scripts/capture-screenshots.js",
+    "capture:screenshots": "node scripts/capture-screenshots-all.js"
   },
   "dependencies": {
     "mysql2": "^3.11.5",

@@ -9,7 +9,6 @@ const {
   saveProject,
   updateProjectById,
   deleteProjectById,
-  updateProjectScreenshotPath,
   addProjectViewEvent,
   addProjectComment
 } = require("./db");
@@ -21,7 +20,7 @@ const {
   createFrameCheckCache,
   resolveFrameCheckCacheTtl
 } = require("./frame-check-cache");
-const { DEFAULT_OUTPUT_DIR, captureScreenshotsFromDatabase } = require("./screenshot-capture");
+const { DEFAULT_OUTPUT_DIR } = require("./screenshot-capture");
 const { getStaticAsset } = require("./static-assets");
 
 const port = Number(process.env.PORT || 3000);
@@ -253,36 +252,4 @@ const server = http.createServer(async (req, res) => {
 
 server.listen(port, () => {
   console.log(`kiosk server: http://localhost:${port}`);
-  startScreenshotCaptureSchedule();
 });
-
-let screenshotCaptureRunning = false;
-
-async function runScreenshotCapture(reason) {
-  if (screenshotCaptureRunning) {
-    console.log(`[screenshots] skipped ${reason}: already running`);
-    return;
-  }
-
-  screenshotCaptureRunning = true;
-  try {
-    console.log(`[screenshots] capture started: ${reason}`);
-    const result = await captureScreenshotsFromDatabase({
-      fetchProjects,
-      updateProjectScreenshotPath
-    });
-    console.log(`[screenshots] capture finished: captured=${result.captured}, skipped=${result.skipped}, failed=${result.failed}`);
-    result.logs
-      .filter((log) => log.status === "failed")
-      .forEach((log) => console.log(`[screenshots] failed project=${log.projectId}: ${log.reason}`));
-  } catch (error) {
-    console.log(`[screenshots] job failed: ${error.message}`);
-  } finally {
-    screenshotCaptureRunning = false;
-  }
-}
-
-function startScreenshotCaptureSchedule() {
-  setTimeout(() => runScreenshotCapture("server-start"), 1000);
-  setInterval(() => runScreenshotCapture("daily"), 24 * 60 * 60 * 1000);
-}

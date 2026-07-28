@@ -102,10 +102,16 @@ async function captureProjectScreenshots(options = {}) {
   return result;
 }
 
+function selectProjectsForCapture(projects, projectId) {
+  return projects.filter((project) => Number(project.id) === Number(projectId));
+}
+
 async function captureScreenshotsFromDatabase(dependencies) {
   const projects = await dependencies.fetchProjects();
   return captureProjectScreenshots({
-    projects,
+    projects: dependencies.projectId
+      ? selectProjectsForCapture(projects, dependencies.projectId)
+      : projects,
     updateScreenshotPath: dependencies.updateProjectScreenshotPath,
     outputDir: dependencies.outputDir,
     timeoutMs: dependencies.timeoutMs,
@@ -117,6 +123,7 @@ module.exports = {
   DEFAULT_OUTPUT_DIR,
   buildScreenshotFileName,
   buildScreenshotWebPath,
+  selectProjectsForCapture,
   captureProjectScreenshots,
   captureScreenshotsFromDatabase
 };

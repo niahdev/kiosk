@@ -3,7 +3,8 @@ const assert = require("node:assert/strict");
 const {
   buildScreenshotFileName,
   buildScreenshotWebPath,
-  captureProjectScreenshots
+  captureProjectScreenshots,
+  selectProjectsForCapture
 } = require("../screenshot-capture");
 
 test("builds a stable screenshot filename from student and project ids", () => {
@@ -83,4 +84,19 @@ test("continues after capture failure without updating screenshot path", async (
   assert.equal(result.failed, 1);
   assert.equal(result.captured, 1);
   assert.deepEqual(updates, [{ projectId: 2, screenshotPath: "/screenshots/kopo02_2.png" }]);
+});
+
+test("selects only the requested project for a single capture process", () => {
+  const projects = [
+    { id: 1, deploymentUrl: "http://example.test/1" },
+    { id: 2, deploymentUrl: "http://example.test/2" }
+  ];
+
+  assert.deepEqual(selectProjectsForCapture(projects, 2), [projects[1]]);
+});
+
+test("returns no projects when the requested project does not exist", () => {
+  const projects = [{ id: 1, deploymentUrl: "http://example.test/1" }];
+
+  assert.deepEqual(selectProjectsForCapture(projects, 99), []);
 });

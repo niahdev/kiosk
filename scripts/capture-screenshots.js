@@ -3,11 +3,14 @@ const {
   updateProjectScreenshotPath
 } = require("../db");
 const { captureScreenshotsFromDatabase } = require("../screenshot-capture");
+const { parseProjectId } = require("./screenshot-cli-options");
 
 async function main() {
+  const projectId = parseProjectId(process.argv.slice(2));
   const result = await captureScreenshotsFromDatabase({
     fetchProjects,
-    updateProjectScreenshotPath
+    updateProjectScreenshotPath,
+    projectId
   });
 
   console.log(`screenshots captured=${result.captured}, skipped=${result.skipped}, failed=${result.failed}`);
