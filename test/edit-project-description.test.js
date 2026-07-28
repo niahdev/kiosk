@@ -16,6 +16,17 @@ test("loads and saves the long project description from the edit page", () => {
   assert.ok(!source.includes("프로젝트 제작 과정 및 설명"));
 });
 
+test("lets users upload screenshots from insert and edit pages", () => {
+  const insertHtml = fs.readFileSync(path.join(__dirname, "..", "insert.html"), "utf8");
+  const editHtml = fs.readFileSync(path.join(__dirname, "..", "edit.html"), "utf8");
+
+  for (const html of [insertHtml, editHtml]) {
+    assert.match(html, /type="file"/);
+    assert.match(html, /image\/png,image\/jpeg,image\/webp/);
+    assert.match(html, /\/screenshot/);
+  }
+});
+
 test("uses the short prompt tips label on the insert page", () => {
   const source = fs.readFileSync(
     path.join(__dirname, "..", "insert.html"),

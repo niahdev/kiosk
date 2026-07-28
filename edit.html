@@ -264,6 +264,12 @@
           </label>
 
           <label>
+            프로젝트 스크린샷
+            <input id="screenshotFile" type="file" accept="image/png,image/jpeg,image/webp">
+            <span>새 파일을 선택하면 기존 스크린샷이 교체됩니다. PNG, JPG, WebP · 최대 5MB</span>
+          </label>
+
+          <label>
             사용한 프롬프트 팁
             <textarea
               id="projectDescription"
@@ -290,6 +296,7 @@
     const progressInput = document.getElementById("progress");
     const deploymentUrlInput = document.getElementById("deploymentUrl");
     const githubUrlInput = document.getElementById("githubUrl");
+    const screenshotFileInput = document.getElementById("screenshotFile");
     const projectDescriptionInput = document.getElementById("projectDescription");
     const message = document.getElementById("message");
     let foundProjects = [];
@@ -328,6 +335,15 @@
       return data;
     }
 
+    async function uploadScreenshot(projectId, file) {
+      if (!file) return;
+      await readJson(await fetch(`${getProjectsApiUrl()}/${projectId}/screenshot`, {
+        method: "PUT",
+        headers: { "Content-Type": file.type },
+        body: file
+      }));
+    }
+
     function clearEditor() {
       selectedProject = null;
       editForm.classList.add("hidden");
@@ -343,6 +359,7 @@
       deploymentUrlInput.value = project.deploymentUrl || "";
       githubUrlInput.value = project.githubUrl || "";
       projectDescriptionInput.value = project.projectDescription || "";
+      screenshotFileInput.value = "";
       editForm.classList.remove("hidden");
       message.textContent = `${project.projectName} 선택됨`;
     }
@@ -420,6 +437,7 @@
           body: JSON.stringify(payload)
         }));
 
+        await uploadScreenshot(data.project.id, screenshotFileInput.files[0]);
         message.textContent = `${data.project.studentId} / ${data.project.projectName} 수정 완료`;
         await searchProjects();
       } catch (error) {

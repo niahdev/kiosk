@@ -9,6 +9,7 @@ const {
   saveProject,
   updateProjectById,
   deleteProjectById,
+  updateProjectScreenshotPath,
   addProjectViewEvent,
   addProjectComment
 } = require("./db");
@@ -21,6 +22,12 @@ const {
   resolveFrameCheckCacheTtl
 } = require("./frame-check-cache");
 const { DEFAULT_OUTPUT_DIR } = require("./screenshot-capture");
+const {
+  MAX_SCREENSHOT_BYTES,
+  validateScreenshotUpload,
+  buildUploadedScreenshotName,
+  getScreenshotContentType
+} = require("./screenshot-upload");
 const { getStaticAsset } = require("./static-assets");
 
 const port = Number(process.env.PORT || 3000);
@@ -48,9 +55,9 @@ async function sendTextAsset(res, asset) {
   res.end(contents);
 }
 
-function sendPng(res, image) {
+function sendImage(res, image, fileName) {
   res.writeHead(200, {
-    "Content-Type": "image/png",
+    "Content-Type": getScreenshotContentType(fileName),
     "Cache-Control": "public, max-age=300"
   });
   res.end(image);
@@ -64,6 +71,21 @@ async function readJson(req) {
 
   const text = Buffer.concat(chunks).toString("utf8");
   return text ? JSON.parse(text) : {};
+}
+
+async function readBuffer(req, maxBytes) {
+  const chunks = [];
+  let byteLength = 0;
+
+  for await (const chunk of req) {
+    byteLength += chunk.length;
+    if (byteLength > maxBytes) {
+      throw new Error("스크린샷은 5MB 이하 파일만 올릴 수 있습니다.");
+    }
+    chunks.push(chunk);
+  }
+
+  return Buffer.concat(chunks);
 }
 
 const server = http.createServer(async (req, res) => {
@@ -109,7 +131,7 @@ const server = http.createServer(async (req, res) => {
 
       try {
         const image = await fs.readFile(resolvedPath);
-        sendPng(res, image);
+        sendImage(res, image, requestedFile);
       } catch (error) {
         sendJson(res, 404, { error: "not_found" });
       }
@@ -172,6 +194,32 @@ const server = http.createServer(async (req, res) => {
 
       const project = await saveProject(validation.project);
       sendJson(res, 200, { ok: true, project });
+      return;
+    }
+
+    const screenshotUploadMatch = url.pathname.match(/^\/api\/projects\/(\d+)\/screenshot$/);
+    if (screenshotUploadMatch && req.method === "PUT") {
+      const projectId = Number(screenshotUploadMatch[1]);
+      const project = await fetchProjectById(projectId);
+
+      if (!project) {
+        sendJson(res, 404, { error: "not_found", message: "프로젝트를 찾지 못했습니다." });
+        return;
+      }
+
+      try {
+        const image = await readBuffer(req, MAX_SCREENSHOT_BYTES);
+        const validated = validateScreenshotUpload(req.headers["content-type"], image);
+        const fileName = buildUploadedScreenshotName(projectId, validated.extension);
+        const screenshotPath = `/screenshots/${fileName}`;
+
+        await fs.mkdir(DEFAULT_OUTPUT_DIR, { recursive: true });
+        await fs.writeFile(path.join(DEFAULT_OUTPUT_DIR, fileName), image, { flag: "wx" });
+        await updateProjectScreenshotPath(projectId, screenshotPath);
+        sendJson(res, 200, { ok: true, screenshotPath });
+      } catch (error) {
+        sendJson(res, 400, { error: "bad_request", message: error.message });
+      }
       return;
     }
 
